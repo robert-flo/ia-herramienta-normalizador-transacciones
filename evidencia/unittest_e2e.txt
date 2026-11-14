@@ -1,0 +1,29 @@
+test_estados (tests.test_e2e.TestBienFormado.test_estados) ... ok
+test_fuentes (tests.test_e2e.TestBienFormado.test_fuentes) ... ok
+test_totales (tests.test_e2e.TestBienFormado.test_totales) ... ok
+test_totales_por_moneda (tests.test_e2e.TestBienFormado.test_totales_por_moneda) ... ok
+test_archivo_inexistente_devuelve_codigo_1_sin_traceback (tests.test_e2e.TestCasosBorde.test_archivo_inexistente_devuelve_codigo_1_sin_traceback) ... ok
+test_archivo_que_no_es_lista_devuelve_codigo_1 (tests.test_e2e.TestCasosBorde.test_archivo_que_no_es_lista_devuelve_codigo_1) ... ok
+test_estados (tests.test_e2e.TestConErrores.test_estados) ... ok
+test_fuentes (tests.test_e2e.TestConErrores.test_fuentes) ... ok
+test_motivo_estado_no_reconocido (tests.test_e2e.TestConErrores.test_motivo_estado_no_reconocido) ... ok
+test_motivo_fecha_inexistente (tests.test_e2e.TestConErrores.test_motivo_fecha_inexistente) ... ok
+test_motivo_fuente_desconocida (tests.test_e2e.TestConErrores.test_motivo_fuente_desconocida) ... ok
+test_motivo_id_duplicado (tests.test_e2e.TestConErrores.test_motivo_id_duplicado) ... ok
+test_motivo_moneda_no_soportada (tests.test_e2e.TestConErrores.test_motivo_moneda_no_soportada) ... ok
+test_motivo_monto_no_numerico (tests.test_e2e.TestConErrores.test_motivo_monto_no_numerico) ... ok
+test_motivo_monto_no_positivo (tests.test_e2e.TestConErrores.test_motivo_monto_no_positivo) ... ok
+test_orden_dia_mes (tests.test_e2e.TestConErrores.test_orden_dia_mes) ... ok
+test_totales (tests.test_e2e.TestConErrores.test_totales) ... ok
+test_totales_por_moneda (tests.test_e2e.TestConErrores.test_totales_por_moneda) ... ok
+test_estados (tests.test_e2e.TestEjemploEnunciado.test_estados) ... ok
+test_fuentes (tests.test_e2e.TestEjemploEnunciado.test_fuentes) ... ok
+test_totales (tests.test_e2e.TestEjemploEnunciado.test_totales) ... ok
+test_totales_por_moneda (tests.test_e2e.TestEjemploEnunciado.test_totales_por_moneda) ... ok
+test_entero_se_interpreta_en_centavos (tests.test_e2e.TestNucleo.test_entero_se_interpreta_en_centavos) ... ok
+test_esquema_normalizado_es_el_del_enunciado (tests.test_e2e.TestNucleo.test_esquema_normalizado_es_el_del_enunciado) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 0.632s
+
+OK

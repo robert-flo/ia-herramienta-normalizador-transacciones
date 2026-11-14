@@ -1,0 +1,27 @@
+{
+  "esquema_normalizado": ["id", "amount", "currency", "timestamp", "status", "source"],
+  "monedas": {
+    "USD": { "simbolos": ["usd", "$", "dolar", "dolares"], "decimales": 2 },
+    "EUR": { "simbolos": ["eur", "\u20ac"], "decimales": 2 }
+  },
+  "estados": {
+    "SUCCESS": ["completed", "ok", "success", "paid", "settled", "approved", "aprobada"],
+    "FAILED": ["failed", "error", "rejected", "declined", "denied", "cancelled", "canceled", "fallida"],
+    "PENDING": ["pending", "processing", "held", "en_proceso", "espera", "pendiente"]
+  },
+  "formatos_fecha": [
+    "%Y-%m-%dT%H:%M:%SZ",
+    "%Y-%m-%dT%H:%M:%S%z",
+    "%Y-%m-%dT%H:%M:%S.%f%z",
+    "%Y-%m-%dT%H:%M:%S",
+    "%Y-%m-%d %H:%M:%S",
+    "%d/%m/%Y %H:%M",
+    "%d/%m/%Y %H:%M:%S",
+    "%d/%m/%Y"
+  ],
+  "fuentes": {
+    "terminal_pos": { "id": "id", "amount": "amount", "currency": "currency", "timestamp": "timestamp", "status": "status" },
+    "pasarela_web": { "id": "transaction_id", "amount": "total", "currency": "currency_code", "timestamp": "created_at", "status": "state" },
+    "app_movil": { "id": "ref", "amount": "amount", "currency": null, "timestamp": "date", "status": "result" }
+  }
+}

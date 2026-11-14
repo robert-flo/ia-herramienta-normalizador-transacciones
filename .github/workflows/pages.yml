@@ -1,0 +1,32 @@
+name: pages
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Copiar núcleo Python, reglas y fixtures a la demo web
+        run: |
+          cp modelo.py cargador.py validador.py normalizador.py metricas.py reglas.json docs/
+          cp RobertoFlores-Tarea04.pdf docs/RobertoFlores-Tarea04.pdf
+          mkdir -p docs/ejemplos
+          cp pruebas/ejemplo_enunciado.json pruebas/bien_formado.json pruebas/con_errores.json docs/ejemplos/
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      - id: deployment
+        uses: actions/deploy-pages@v4

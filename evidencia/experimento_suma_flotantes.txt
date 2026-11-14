@@ -1,0 +1,8 @@
+CPython 3.11.14
+
+Suma acumulada sin redondeo por transaccion: 6596.38
+Con round(total, 2): 6596.38
+
+Hallazgo: sumar flotantes transaccion por transaccion acumula residuos
+binarios (0.1+0.2 -> 0.30000000000000004). Por eso metricas.py redondea
+el acumulado a 2 decimales en CADA transaccion, no solo al final.

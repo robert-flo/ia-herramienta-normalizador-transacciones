@@ -1,0 +1,16 @@
+Origen: pruebas/bien_formado.json
+Transacciones procesadas: 10
+Válidas: 10
+Inválidas: 0
+Conteo por estado (sobre válidas):
+  SUCCESS: 5
+  FAILED: 2
+  PENDING: 3
+Totales por moneda (sobre válidas):
+  EUR: 1426.74 en 6 transacciones
+  USD: 4868.65 en 4 transacciones
+Conteo por fuente detectada (sobre válidas):
+  app_movil: 3
+  pasarela_web: 3
+  terminal_pos: 4
+Solapamiento: las métricas por estado, moneda y fuente solo suman transacciones VÁLIDAS. Una transacción inválida cuenta en Inválidas y en su detalle con motivo, nunca en los conteos por estado.

@@ -1,0 +1,16 @@
+Origen: pruebas/ejemplo_enunciado.json
+Transacciones procesadas: 3
+Válidas: 3
+Inválidas: 0
+Conteo por estado (sobre válidas):
+  SUCCESS: 3
+  FAILED: 0
+  PENDING: 0
+Totales por moneda (sobre válidas):
+  EUR: 99.99 en 1 transacciones
+  USD: 201.00 en 2 transacciones
+Conteo por fuente detectada (sobre válidas):
+  app_movil: 1
+  pasarela_web: 1
+  terminal_pos: 1
+Solapamiento: las métricas por estado, moneda y fuente solo suman transacciones VÁLIDAS. Una transacción inválida cuenta en Inválidas y en su detalle con motivo, nunca en los conteos por estado.

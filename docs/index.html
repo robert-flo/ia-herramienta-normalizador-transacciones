@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Normalizador de Transacciones Multifuente — Demo Interactiva</title>
+<style>
+  :root { color-scheme: light dark; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    margin: 0 auto; padding: 1.5rem; max-width: 62rem;
+    background: #f5f6f8; color: #1c1e21; line-height: 1.5;
+  }
+  header h1 { font-size: 1.5rem; margin: 0 0 .25rem; }
+  header p.meta { color: #555; font-size: .9rem; margin: 0; }
+  section.card {
+    background: #fff; border: 1px solid #d8dce2; border-radius: 10px;
+    padding: 1rem 1.25rem; margin: 1rem 0;
+  }
+  section.card h2 { font-size: 1.05rem; margin: 0 0 .6rem; }
+  button.btn {
+    font: inherit; padding: .45rem .8rem; border-radius: 7px;
+    border: 1px solid #b9c0c9; background: #fff; cursor: pointer;
+  }
+  button.btn:hover:not(:disabled) { background: #eef1f5; }
+  button.btn.primary { background: #1d4ed8; border-color: #1d4ed8; color: #fff; }
+  button.btn.primary:hover:not(:disabled) { background: #1e40af; }
+  button.btn:disabled { opacity: .5; cursor: not-allowed; }
+  textarea#editor-json {
+    width: 100%; min-height: 13rem; font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+    font-size: .85rem; padding: .6rem; border: 1px solid #b9c0c9; border-radius: 7px;
+    white-space: pre; resize: vertical;
+  }
+  table#tabla-validas { border-collapse: collapse; width: 100%; font-size: .85rem; }
+  table#tabla-validas th, table#tabla-validas td { border-bottom: 1px solid #e3e6ea; padding: .35rem .5rem; text-align: left; }
+  table#tabla-validas th { background: #eef1f5; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .estado-SUCCESS { color: #166534; font-weight: 600; }
+  .estado-FAILED { color: #b91c1c; font-weight: 600; }
+  .estado-PENDING { color: #92400e; font-weight: 600; }
+  .invalida { color: #b91c1c; font-size: .85rem; margin: .3rem 0; }
+  .invalida small { color: #555; }
+  .estado-carga { font-size: .85rem; color: #555; }
+  .filtros { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: .5rem 0; }
+  .filtros label { font-size: .85rem; }
+  .filtros select { font: inherit; padding: .3rem .45rem; border-radius: 6px; border: 1px solid #b9c0c9; }
+  .metricas-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: .6rem; }
+  .metrica { border: 1px solid #e3e6ea; border-radius: 8px; padding: .5rem .7rem; }
+  .metrica strong { display: block; font-size: 1.25rem; }
+  .metrica small { color: #555; }
+  ul#lista-invalidas { margin: .4rem 0 0; padding-left: 1.1rem; }
+  .oculto { display: none; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Normalizador de Transacciones Multifuente</h1>
+  <p class="meta">Demo web interactiva · Ejecuta el mismo código Python del CLI en tu navegador (Pyodide / WebAssembly) · Roberto Carlos Flores Quintanilla</p>
+  <p class="estado-carga" id="estado-carga">Cargando Python en el navegador…</p>
+</header>
+
+<section class="card">
+  <h2>1. Datos de entrada</h2>
+  <p>
+    <button type="button" class="btn demo-btn" data-demo="ejemplo_enunciado.json" disabled>▶ Probar ejemplo_enunciado.json</button>
+    <button type="button" class="btn demo-btn" data-demo="bien_formado.json" disabled>▶ Probar bien_formado.json</button>
+    <button type="button" class="btn demo-btn" data-demo="con_errores.json" disabled>▶ Probar con_errores.json</button>
+    <label class="btn" for="archivo-entrada">Cargar archivo .json…</label>
+    <input type="file" id="archivo-entrada" accept=".json,application/json" style="display:none">
+  </p>
+  <textarea id="editor-json" spellcheck="false" aria-label="JSON de transacciones"></textarea>
+  <p>
+    <button type="button" id="btn-normalizar" class="btn primary" disabled>Normalizar y explorar</button>
+    <button type="button" id="btn-descargar" class="btn" disabled>Descargar JSON normalizado</button>
+  </p>
+</section>
+
+<section class="card oculto" id="seccion-resultados">
+  <h2>2. Métricas del lote</h2>
+  <div class="metricas-grid" id="metricas"></div>
+  <h2 style="margin-top:1rem">3. Explorar transacciones normalizadas</h2>
+  <div class="filtros">
+    <label>Estado <select id="filtro-estado"><option value="">(todos)</option></select></label>
+    <label>Moneda <select id="filtro-moneda"><option value="">(todas)</option></select></label>
+    <label>Fuente <select id="filtro-fuente"><option value="">(todas)</option></select></label>
+    <span id="conteo-filtro" class="estado-carga"></span>
+  </div>
+  <div style="overflow-x:auto">
+    <table id="tabla-validas">
+      <thead><tr><th>#</th><th>ID</th><th class="num">MONTO</th><th>MONEDA</th><th>TIMESTAMP</th><th>ESTADO</th><th>FUENTE</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <h2 style="margin-top:1rem">4. Transacciones inválidas</h2>
+  <ul id="lista-invalidas"></ul>
+</section>
+
+<script type="module">
+const PYODIDE_CDN = "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/";
+const MODULOS = ["modelo.py", "cargador.py", "validador.py", "normalizador.py", "metricas.py", "reglas.json"];
+
+let pyodide = null;
+let resultadoJson = null;
+
+function estado(texto) { document.getElementById("estado-carga").textContent = texto; }
+
+async function cargarModulo(py) {
+  // La demo web ejecuta EXACTAMENTE los mismos módulos Python que el CLI:
+  // se descargan los .py publicados en este sitio y se importan en Pyodide.
+  for (const nombre of MODULOS) {
+    const respuesta = await fetch("./" + nombre);
+    if (!respuesta.ok) throw new Error("No se pudo cargar " + nombre + " (" + respuesta.status + ")");
+    py.FS.writeFile(nombre, new Uint8Array(await respuesta.arrayBuffer()));
+  }
+  py.runPython("import normalizador");
+}
+
+async function iniciar() {
+  estado("Cargando Python en el navegador… (unos segundos la primera vez)");
+  const { loadPyodide } = await import(PYODIDE_CDN + "pyodide.mjs");
+  pyodide = await loadPyodide({ indexURL: PYODIDE_CDN });
+  await cargarModulo(pyodide);
+  estado("Listo: Python cargado y el núcleo del normalizador importado.");
+  document.querySelectorAll(".demo-btn").forEach((boton) => (boton.disabled = false));
+  document.getElementById("btn-normalizar").disabled = false;
+}
+
+async function cargarDemo(nombre) {
+  const respuesta = await fetch("./ejemplos/" + nombre);
+  const texto = await respuesta.text();
+  document.getElementById("editor-json").value = texto;
+}
+
+function poblarSelect(id, valores) {
+  const select = document.getElementById(id);
+  for (const valor of valores) {
+    const opcion = document.createElement("option");
+    opcion.value = valor; opcion.textContent = valor;
+    select.appendChild(opcion);
+  }
+}
+
+function pintar() {
+  const resultado = JSON.parse(resultadoJson);
+  const metricas = resultado.metricas;
+  document.getElementById("metricas").innerHTML = `
+    <div class="metrica"><strong>${metricas.total_procesadas}</strong><small>procesadas</small></div>
+    <div class="metrica"><strong>${metricas.total_validas}</strong><small>válidas</small></div>
+    <div class="metrica"><strong>${metricas.total_invalidas}</strong><small>inválidas</small></div>
+    ${Object.entries(metricas.total_por_moneda).map(([moneda, total]) =>
+      `<div class="metrica"><strong>${total.toFixed(2)}</strong><small>total ${moneda} (${metricas.conteo_por_moneda[moneda]} tx)</small></div>`).join("")}`;
+  poblarSelect("filtro-estado", Object.entries(metricas.por_estado).filter(([, n]) => n > 0).map(([e]) => e));
+  poblarSelect("filtro-moneda", Object.keys(metricas.conteo_por_moneda));
+  poblarSelect("filtro-fuente", Object.keys(metricas.por_fuente));
+  listaInvalidas(resultado);
+  aplicarFiltros();
+  document.getElementById("seccion-resultados").classList.remove("oculto");
+  document.getElementById("btn-descargar").disabled = !resultado.validas.length;
+}
+
+function listaInvalidas(resultado) {
+  const lista = document.getElementById("lista-invalidas");
+  lista.innerHTML = "";
+  if (!resultado.invalidas.length) {
+    const item = document.createElement("li");
+    item.textContent = "Ninguna: todas las transacciones pasaron la validación.";
+    lista.appendChild(item);
+    return;
+  }
+  for (const invalida of resultado.invalidas) {
+    const item = document.createElement("li");
+    item.className = "invalida";
+    item.textContent = `Registro ${invalida.indice}: ${invalida.motivos.join("; ")}`;
+    const detalle = document.createElement("small");
+    detalle.textContent = " — " + JSON.stringify(invalida.texto);
+    item.appendChild(detalle);
+    lista.appendChild(item);
+  }
+}
+
+function aplicarFiltros() {
+  const resultado = JSON.parse(resultadoJson);
+  const estado = document.getElementById("filtro-estado").value;
+  const moneda = document.getElementById("filtro-moneda").value;
+  const fuente = document.getElementById("filtro-fuente").value;
+  const filas = resultado.validas.filter((t) =>
+    (!estado || t.status === estado) && (!moneda || t.currency === moneda) && (!fuente || t.source === fuente));
+  const cuerpo = document.querySelector("#tabla-validas tbody");
+  cuerpo.innerHTML = "";
+  filas.forEach((t, i) => {
+    const fila = document.createElement("tr");
+    fila.innerHTML = `<td>${i + 1}</td><td>${t.id}</td><td class="num">${t.amount.toFixed(2)}</td><td>${t.currency}</td><td>${t.timestamp}</td><td class="estado-${t.status}">${t.status}</td><td>${t.source}</td>`;
+    cuerpo.appendChild(fila);
+  });
+  document.getElementById("conteo-filtro").textContent = `${filas.length} de ${resultado.validas.length} transacciones`;
+}
+
+document.querySelectorAll(".demo-btn").forEach((boton) =>
+  boton.addEventListener("click", () => cargarDemo(boton.dataset.demo)));
+
+document.getElementById("archivo-entrada").addEventListener("change", async (evento) => {
+  const archivo = evento.target.files[0];
+  if (archivo) document.getElementById("editor-json").value = await archivo.text();
+});
+
+document.getElementById("btn-normalizar").addEventListener("click", () => {
+  if (!pyodide) return;
+  const texto = document.getElementById("editor-json").value;
+  try {
+    pyodide.globals.set("__entrada_json", texto);
+    resultadoJson = pyodide.runPython(`
+import json
+from normalizador import procesar_texto
+from metricas import calcular
+resultado = procesar_texto(__entrada_json)
+json.dumps({
+    "metricas": calcular(resultado),
+    "validas": [t.como_dict() for t in resultado.validas],
+    "invalidas": [{"indice": i.indice, "motivos": i.motivos, "texto": i.texto} for i in resultado.invalidas],
+}, ensure_ascii=False)`);
+    pintar();
+  } catch (error) {
+    estado("Error: " + (error.message || error));
+  }
+});
+
+document.getElementById("btn-descargar").addEventListener("click", () => {
+  const resultado = JSON.parse(resultadoJson);
+  const blob = new Blob([JSON.stringify(resultado.validas, null, 2) + "\n"], { type: "application/json" });
+  const enlace = document.createElement("a");
+  enlace.href = URL.createObjectURL(blob);
+  enlace.download = "normalizadas.json";
+  enlace.click();
+  URL.revokeObjectURL(enlace.href);
+});
+
+["filtro-estado", "filtro-moneda", "filtro-fuente"].forEach((id) =>
+  document.getElementById(id).addEventListener("change", aplicarFiltros));
+
+iniciar().catch((error) => estado("No se pudo cargar Python en el navegador: " + (error.message || error)));
+</script>
+</body>
+</html>

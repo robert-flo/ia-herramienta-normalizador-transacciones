@@ -1,0 +1,26 @@
+Origen: pruebas/con_errores.json
+Transacciones procesadas: 12
+Válidas: 4
+Inválidas: 8
+Conteo por estado (sobre válidas):
+  SUCCESS: 3
+  FAILED: 0
+  PENDING: 1
+Totales por moneda (sobre válidas):
+  EUR: 5.25 en 1 transacciones
+  USD: 73.00 en 3 transacciones
+Conteo por fuente detectada (sobre válidas):
+  app_movil: 1
+  pasarela_web: 2
+  terminal_pos: 1
+Solapamiento: las métricas por estado, moneda y fuente solo suman transacciones VÁLIDAS. Una transacción inválida cuenta en Inválidas y en su detalle con motivo, nunca en los conteos por estado.
+
+Detalle de inválidas (8):
+  - registro 2: monto no numérico ('abc')
+  - registro 3: moneda no soportada ('gbp'); monto entero sin moneda con unidad menor definida
+  - registro 4: fecha con formato no reconocido ('2025-02-30 10:00:00')
+  - registro 5: monto no positivo
+  - registro 6: id duplicado (tx_201 ya fue aceptado en una transacción válida anterior)
+  - registro 7: estado no reconocido ('charged')
+  - registro 9: fuente desconocida (ninguna firma de campos de reglas.json encaja)
+  - registro 10: monto ausente o vacío

@@ -1,0 +1,15 @@
+CPython 3.11.14
+
+datetime.strptime(valor, "%m/%d/%Y %H:%M")  # orden anglosajon MES/DIA
+  ACEPTA '10/03/2025 14:22' -> 2025-10-03 14:22 (mes=10, dia=3)
+  RECHAZA '13/03/2025 12:00' -> ValueError: time data '13/03/2025 12:00' does not match format '%m/%d/%Y %H:%M'
+
+datetime.strptime(valor, "%d/%m/%Y %H:%M")  # orden latinoamericano DIA/MES
+  ACEPTA '10/03/2025 14:22' -> 2025-03-10 14:22 (mes=3, dia=10)
+  ACEPTA '13/03/2025 12:00' -> 2025-03-13 12:00 (mes=3, dia=13)
+
+Hallazgo: el mismo token 10/03/2025 se interpreta como 3 de octubre con
+MES/DIA y como 10 de marzo con DIA/MES. Y con MES/DIA el token 13/03/2025
+es imposible (no existe el mes 13): strptime lo rechaza. Por eso la
+decision del desarrollador es probar primero los formatos ISO-8601 y
+despues dia/mes/anio, en ese orden, tal como quedaron en reglas.json.

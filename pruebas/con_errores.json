@@ -1,0 +1,14 @@
+[
+  { "id": "tx_201", "amount": "50.00", "currency": "USD", "timestamp": "2025-03-12 08:00:00", "status": "completed" },
+  { "id": "tx_202", "amount": "abc", "currency": "USD", "timestamp": "2025-03-12 08:05:00", "status": "completed" },
+  { "transaction_id": 301, "total": 2500, "currency_code": "gbp", "created_at": "12/03/2025 09:00", "state": "OK" },
+  { "id": "tx_203", "amount": "30.00", "currency": "USD", "timestamp": "2025-02-30 10:00:00", "status": "completed" },
+  { "id": "tx_204", "amount": "0.00", "currency": "USD", "timestamp": "2025-03-12 10:30:00", "status": "completed" },
+  { "id": "tx_201", "amount": "10.00", "currency": "USD", "timestamp": "2025-03-12 11:00:00", "status": "completed" },
+  { "ref": "A-90", "amount": "€20,00", "date": "2025-03-12T09:45:00Z", "result": "charged" },
+  { "transaction_id": 302, "total": 1500, "currency_code": "usd", "created_at": "13/03/2025 12:00", "state": "OK" },
+  { "foo": "bar" },
+  { "id": "tx_205", "amount": "", "currency": "USD", "timestamp": "2025-03-12 14:00:00", "status": "completed" },
+  { "transaction_id": 303, "total": 800, "currency_code": "usd", "created_at": "12/03/2025 15:30", "state": "OK" },
+  { "ref": "A-91", "amount": "€5,25", "date": "2025-03-12T16:00:00Z", "result": "pending" }
+]
