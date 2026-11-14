@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Normalizador de Transacciones Multifuente — Demo Interactiva</title>
 <style>
-  :root { color-scheme: light dark; }
+  :root { color-scheme: light; }
   * { box-sizing: border-box; }
   body {
     font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
@@ -21,7 +21,7 @@
   section.card h2 { font-size: 1.05rem; margin: 0 0 .6rem; }
   button.btn {
     font: inherit; padding: .45rem .8rem; border-radius: 7px;
-    border: 1px solid #b9c0c9; background: #fff; cursor: pointer;
+    border: 1px solid #b9c0c9; background: #fff; color: #1c1e21; cursor: pointer;
   }
   button.btn:hover:not(:disabled) { background: #eef1f5; }
   button.btn.primary { background: #1d4ed8; border-color: #1d4ed8; color: #fff; }
@@ -51,6 +51,11 @@
   .metrica small { color: #555; }
   ul#lista-invalidas { margin: .4rem 0 0; padding-left: 1.1rem; }
   .oculto { display: none; }
+  pre#salida-json {
+    font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: .8rem;
+    max-height: 24rem; overflow: auto; background: #f5f6f8;
+    border: 1px solid #d8dce2; border-radius: 8px; padding: .7rem; margin: .6rem 0 0;
+  }
 </style>
 </head>
 <body>
@@ -72,8 +77,9 @@
   <textarea id="editor-json" spellcheck="false" aria-label="JSON de transacciones"></textarea>
   <p>
     <button type="button" id="btn-normalizar" class="btn primary" disabled>Normalizar y explorar</button>
-    <button type="button" id="btn-descargar" class="btn" disabled>Descargar JSON normalizado</button>
+    <button type="button" id="btn-descargar" class="btn" disabled>Ver y descargar JSON normalizado</button>
   </p>
+  <pre id="salida-json" class="oculto" aria-label="JSON normalizado"></pre>
 </section>
 
 <section class="card oculto" id="seccion-resultados">
@@ -227,7 +233,11 @@ json.dumps({
 
 document.getElementById("btn-descargar").addEventListener("click", () => {
   const resultado = JSON.parse(resultadoJson);
-  const blob = new Blob([JSON.stringify(resultado.validas, null, 2) + "\n"], { type: "application/json" });
+  const texto = JSON.stringify(resultado.validas, null, 2) + "\n";
+  const salida = document.getElementById("salida-json");
+  salida.textContent = texto;
+  salida.classList.remove("oculto");
+  const blob = new Blob([texto], { type: "application/json" });
   const enlace = document.createElement("a");
   enlace.href = URL.createObjectURL(blob);
   enlace.download = "normalizadas.json";
