@@ -1,0 +1,20 @@
+Paridad CLI vs Web — verificada en vivo el 2026-11-14 contra
+https://robert-flo.github.io/ia-herramienta-normalizador-transacciones/
+(usando el botón de prueba "▶ Probar con_errores.json" y "Normalizar y explorar")
+
+Web (Pyodide, mismo núcleo Python que el CLI):
+  Métricas: 12 procesadas | 4 válidas | 8 inválidas
+  Totales por moneda: USD 73.00 (3 tx) | EUR 5.25 (1 tx)
+  Tabla de válidas: tx_201 50.00 USD SUCCESS terminal_pos · 302 15.00 USD
+    SUCCESS pasarela_web (fecha 13/03 leída como día 13 de marzo) · 303 8.00 USD
+    SUCCESS pasarela_web · A-91 5.25 EUR PENDING app_movil
+  Filtros disponibles: Estado (SUCCESS/PENDING), Moneda (EUR/USD),
+    Fuente (app_movil/pasarela_web/terminal_pos)
+  Inválidas con motivo: registros 2, 3, 4, 5, 6, 7, 9 y 10, con los mismos
+    motivos exactos que imprime el CLI.
+
+CLI (evidencia/cli_con_errores.txt):
+  12 procesadas | 4 válidas | 8 inválidas | USD 73.00 | EUR 5.25 | mismos motivos.
+
+Conclusión: la interfaz web y la CLI ejecutan el mismo código Python y
+producen resultados idénticos sobre el mismo lote.
